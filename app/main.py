@@ -1,23 +1,28 @@
 from app.db.db import SessionLocal
 from app.db import crud
 
-def main():
-    print("--- ПОДКЛЮЧЕНИЕ К БАЗЕ ДАННЫХ ---")
-    db = SessionLocal()
-    try:
-        categories = crud.get_categories(db)
-        books = crud.get_books(db)
+def show_db_data():
+    session = SessionLocal()
+    
+    print("--- Проверка данных в БД ---")
+    
+    # достаем категории и выводим списком
+    cats = crud.get_categories(session)
+    print(f"\nВсего категорий в базе: {len(cats)}")
+    for c in cats:
+        print(f"ID: {c.id} | Название: {c.title}")
 
-        print(f"\nНайдено категорий: {len(categories)}")
-        for cat in categories:
-            print(f" ID: {cat.id} | Название: {cat.title}")
+    # теперь выводим книги
+    all_books = crud.get_books(session)
+    print(f"\nСписок книг ({len(all_books)} шт.):")
+    
+    for b in all_books:
+        print(f"- Книга: {b.title}")
+        print(f"  Цена: {b.price} руб.")
+        print(f"  Категория (ID): {b.category_id}")
+        print("*" * 30)
 
-        print(f"\nНайдено книг: {len(books)}")
-        for book in books:
-            print(f" Книга: \"{book.title}\" | Цена: {book.price} руб. | ID категории: {book.category_id}")
-            print("-" * 40)
-    finally:
-        db.close()
+    session.close()
 
 if __name__ == "__main__":
-    main()
+    show_db_data()
